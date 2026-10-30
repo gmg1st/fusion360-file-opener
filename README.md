@@ -1,17 +1,21 @@
-# Fusion 360 文件缩略图提供程序
+# Fusion 360 文件双击打开工具
 
-让 Windows 资源管理器直接显示 Fusion 360 `.f3d` / `.f3z` 文件的 3D 模型预览缩略图，并支持双击直接打开这些文件。
+解决 Windows 下 Fusion 360 CAD 文件（`.f3d` / `.f3z` 等）**双击无法直接打开**的问题，并顺带为资源管理器提供 3D 模型缩略图预览。
 
 ![功能示意](https://img.shields.io/badge/平台-Windows_10/11-blue) ![语言](https://img.shields.io/badge/语言-纯_C-informational) ![架构](https://img.shields.io/badge/架构-x64-success)
 
 ## 功能特性
 
+- **双击直接打开**：双击 CAD 文件即可自动启动并加载到 Fusion 360，支持 `.f3d`、`.f3z`、`.step`、`.stp`、`.iges`、`.igs`、`.sat`、`.smt` 格式，绕过 Windows UserChoice 文件关联保护
 - **缩略图预览**：在资源管理器中直接显示 `.f3d` / `.f3z` 文件内嵌的 3D 模型预览图，无需打开 Fusion 360
-- **双击打开**：双击 CAD 文件即可启动并加载到 Fusion 360，支持 `.f3d`、`.f3z`、`.step`、`.stp`、`.iges`、`.igs`、`.sat`、`.smt` 格式
 - **纯原生实现**：缩略图提供程序为纯 C 编写的 COM 组件，无 .NET 运行时依赖，加载快、兼容性好
-- **Fusion 360 加载项**：提供 Python 加载项，增强 Fusion 360 与系统的文件关联体验
+- **Fusion 360 加载项**：提供 Python 加载项，配合启动器实现在已运行的 Fusion 360 中直接加载模型
 
 ## 工作原理
+
+### 双击打开流程
+
+Windows 通过 UserChoice 哈希保护阻止程序自动接管文件关联，因此本工具采用「启动器包装」方案：将打开方式注册为 `F3DLauncher.exe`，由它定位并调用 `FusionLauncher.exe` 加载模型；配合可选的 Fusion 360 加载项（`F3DFileOpener`），还能把文件直接传入已运行的 Fusion 360 窗口。
 
 ### 缩略图提取流程
 
@@ -62,6 +66,8 @@
 ## 安装方法
 
 > 以下以 64 位 Windows 10/11 为例。`<LocalAppData>` 指当前用户目录，即 `C:\Users\<用户名>\AppData\Local`。
+>
+> 只需要**双击打开**功能：完成步骤 1、2（文件关联）即可；需要**缩略图**功能：再完成步骤 3、4。
 
 ### 1. 部署文件
 
@@ -73,7 +79,11 @@
 | `libzstd.dll` | Zstandard 解压库（64 位） |
 | `zlib1.dll` | Deflate 解压库（64 位） |
 
-### 2. 注册 COM 组件
+### 2. 安装文件关联
+
+双击 `register_thumbnail.reg` 导入文件关联，使双击 CAD 文件时通过 `F3DLauncher.exe` 启动。
+
+### 3. 注册缩略图 COM 组件
 
 以管理员身份运行 PowerShell，执行：
 
@@ -86,7 +96,7 @@
 - `HKCR\.f3d\ShellEx\{E357FCCD-A995-4576-B01F-234630154E96}` → 指向缩略图提供程序 CLSID
 - `HKCR\CLSID\{C7A3F5D2-8E4B-4F6A-9D1E-3B5C7F8A2E6D}\InprocServer32` → 指向 DLL 路径，ThreadingModel = Both
 
-### 3. 刷新缩略图缓存
+### 4. 刷新缩略图缓存
 
 注册后必须清除旧缓存并重启资源管理器才能生效：
 
@@ -100,10 +110,6 @@ Remove-Item "$env:LocalAppData\Microsoft\Windows\Explorer\thumbcache_*.db" -Forc
 # 重启资源管理器
 Start-Process explorer.exe
 ```
-
-### 4. 安装文件关联（可选）
-
-双击 `register_thumbnail.reg` 导入文件关联，使双击 CAD 文件时通过 `F3DLauncher.exe` 启动。
 
 ### 5. 安装 Fusion 360 加载项（可选）
 
