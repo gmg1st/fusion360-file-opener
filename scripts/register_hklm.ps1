@@ -3,7 +3,7 @@
 
 $newClsid = "{C7A3F5D2-8E4B-4F6A-9D1E-3B5C7F8A2E6D}"
 $oldClsid = "{E8F4A2C1-7B3D-4E8F-9A6B-5C2D1E3F4A5B}"
-$dllPath = "C:\Users\G11\AppData\Local\F3DThumbnailProvider\F3DThumbnailProviderNative.dll"
+$dllPath = Join-Path $env:LOCALAPPDATA "F3DThumbnailProvider\F3DThumbnailProviderNative.dll"
 $shellExGuid = "{E357FCCD-A995-4576-B01F-234630154E96}"
 
 # 1. Remove old .NET CLSID from HKLM

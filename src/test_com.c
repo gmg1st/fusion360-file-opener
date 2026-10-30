@@ -106,7 +106,14 @@ typedef HRESULT (__stdcall *DllGetClassObjectFunc)(const GUID*, const GUID*, voi
 int main() {
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-    const wchar_t* dllPath = L"C:\\Users\\G11\\AppData\\Local\\F3DThumbnailProvider\\F3DThumbnailProviderNative.dll";
+    // Resolve DLL path from %LOCALAPPDATA% (works for any user)
+    wchar_t dllPath[MAX_PATH];
+    DWORD nEnv = GetEnvironmentVariableW(L"LOCALAPPDATA", dllPath, MAX_PATH);
+    if (nEnv == 0 || nEnv >= MAX_PATH - 60) {
+        printf("FAILED: LOCALAPPDATA not set or too long\n");
+        return 1;
+    }
+    wcscat(dllPath, L"\\F3DThumbnailProvider\\F3DThumbnailProviderNative.dll");
     const wchar_t* testFile = L"D:\\fusion360\\Installation\\Local\\Autodesk\\webdeploy\\production\\61bf25b220a2d0307c84c301e65a59ac225d9a1e\\Fusion\\Server\\Fusion\\Configuration\\Mechanical\\Screws\\FlatHex.f3d";
 
     printf("=== F3D Thumbnail Provider COM Test ===\n");

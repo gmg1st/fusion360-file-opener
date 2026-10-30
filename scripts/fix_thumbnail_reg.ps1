@@ -2,7 +2,8 @@
 # Run as Administrator
 
 $clsid = "{E8F4A2C1-7B3D-4E8F-9A6B-5C2D1E3F4A5B}"
-$dllPath = "C:\Users\G11\AppData\Local\F3DThumbnailProvider\F3DThumbnailProvider.dll"
+$dllPath = Join-Path $env:LOCALAPPDATA "F3DThumbnailProvider\F3DThumbnailProvider.dll"
+$codeBaseUrl = "file:///" + ($dllPath -replace '\\', '/')
 
 # 1. Fix HKCU registration - ensure full path to mscoree.dll
 $hkcuBase = "HKCU:\SOFTWARE\Classes\CLSID\$clsid"
@@ -11,7 +12,7 @@ Set-ItemProperty -Path "$hkcuBase\InprocServer32" -Name "ThreadingModel" -Value 
 Set-ItemProperty -Path "$hkcuBase\InprocServer32" -Name "Class" -Value "F3DThumbnailProvider.F3DThumbnailProviderClass" -Type String
 Set-ItemProperty -Path "$hkcuBase\InprocServer32" -Name "Assembly" -Value "F3DThumbnailProvider, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" -Type String
 Set-ItemProperty -Path "$hkcuBase\InprocServer32" -Name "RuntimeVersion" -Value "v4.0.30319" -Type String
-Set-ItemProperty -Path "$hkcuBase\InprocServer32" -Name "CodeBase" -Value "file:///C:/Users/G11/AppData/Local/F3DThumbnailProvider/F3DThumbnailProvider.dll" -Type String
+Set-ItemProperty -Path "$hkcuBase\InprocServer32" -Name "CodeBase" -Value $codeBaseUrl -Type String
 # Add DisableProcessIsolation to force in-proc loading
 Set-ItemProperty -Path $hkcuBase -Name "DisableProcessIsolation" -Value 1 -Type DWord -ErrorAction SilentlyContinue
 
@@ -27,7 +28,7 @@ Set-ItemProperty -Path "$hklmBase\InprocServer32" -Name "ThreadingModel" -Value 
 Set-ItemProperty -Path "$hklmBase\InprocServer32" -Name "Class" -Value "F3DThumbnailProvider.F3DThumbnailProviderClass" -Type String
 Set-ItemProperty -Path "$hklmBase\InprocServer32" -Name "Assembly" -Value "F3DThumbnailProvider, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" -Type String
 Set-ItemProperty -Path "$hklmBase\InprocServer32" -Name "RuntimeVersion" -Value "v4.0.30319" -Type String
-Set-ItemProperty -Path "$hklmBase\InprocServer32" -Name "CodeBase" -Value "file:///C:/Users/G11/AppData/Local/F3DThumbnailProvider/F3DThumbnailProvider.dll" -Type String
+Set-ItemProperty -Path "$hklmBase\InprocServer32" -Name "CodeBase" -Value $codeBaseUrl -Type String
 
 New-Item -Path "$hklmBase\ProgId" -Force -ErrorAction SilentlyContinue | Out-Null
 Set-ItemProperty -Path "$hklmBase\ProgId" -Name "(default)" -Value "F3DThumbnailProvider.F3DThumbnailProviderClass" -Type String

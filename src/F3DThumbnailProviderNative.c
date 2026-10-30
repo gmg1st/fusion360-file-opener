@@ -147,9 +147,26 @@ static int IsEqualGUID_(const GUID* a, const GUID* b) {
     return memcmp(a, b, sizeof(GUID)) == 0;
 }
 
+// ========== Path helpers (resolve %LOCALAPPDATA% at runtime) ==========
+static wchar_t g_logPath[MAX_PATH] = {0};
+static wchar_t g_providerDir[MAX_PATH] = {0};
+
+static BOOL BuildPathFromLocalAppData(const wchar_t* rel, wchar_t* out, DWORD cch) {
+    DWORD n = GetEnvironmentVariableW(L"LOCALAPPDATA", out, cch);
+    if (n == 0 || n >= cch - 2) return FALSE;
+    if (out[n-1] != L'\\') { out[n] = L'\\'; out[n+1] = 0; n++; }
+    size_t rl = wcslen(rel);
+    if (n + rl + 1 > cch) return FALSE;
+    for (size_t i = 0; i <= rl; i++) out[n + i] = rel[i];
+    return TRUE;
+}
+
 // ========== Global Debug Logging ==========
 static void DebugLog(const char* msg) {
-    HANDLE hLog = CreateFileW(L"C:\\Users\\G11\\AppData\\Local\\Temp\\f3d_thumb.log",
+    if (!g_logPath[0]) {
+        if (!BuildPathFromLocalAppData(L"Temp\\f3d_thumb.log", g_logPath, MAX_PATH)) return;
+    }
+    HANDLE hLog = CreateFileW(g_logPath,
         FILE_APPEND_DATA, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hLog != INVALID_HANDLE_VALUE) {
         DWORD written;
@@ -279,8 +296,10 @@ static HMODULE g_hZstd = NULL;
 static BOOL InitZstd() {
     if (g_hZstd) return TRUE;
     
+    wchar_t zstdPath[MAX_PATH];
+    BuildPathFromLocalAppData(L"F3DThumbnailProvider\\libzstd.dll", zstdPath, MAX_PATH);
     const wchar_t* paths[] = {
-        L"C:\\Users\\G11\\AppData\\Local\\F3DThumbnailProvider\\libzstd.dll",
+        zstdPath,
         L"libzstd.dll",
         L"zstd.dll",
         NULL
@@ -371,8 +390,10 @@ static BOOL InitZlib() {
     if (g_zlibInit) return g_zlibAvail;
     g_zlibInit = TRUE;
     
+    wchar_t zlibPath[MAX_PATH];
+    BuildPathFromLocalAppData(L"F3DThumbnailProvider\\zlib1.dll", zlibPath, MAX_PATH);
     const wchar_t* paths[] = {
-        L"C:\\Users\\G11\\AppData\\Local\\F3DThumbnailProvider\\zlib1.dll",
+        zlibPath,
         L"zlib1.dll",
         NULL
     };
@@ -812,11 +833,13 @@ static HRESULT STDMETHODCALLTYPE Thumbnail_GetThumbnail(IThumbnailProvider* This
     
     // Debug logging
     #define LOG(msg) do { \
-        HANDLE hLog = CreateFileW(L"C:\\Users\\G11\\AppData\\Local\\Temp\\f3d_thumb.log", \
-            FILE_APPEND_DATA, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL); \
-        if (hLog != INVALID_HANDLE_VALUE) { \
-            DWORD written; WriteFile(hLog, msg, strlen(msg), &written, NULL); \
-            WriteFile(hLog, "\r\n", 2, &written, NULL); CloseHandle(hLog); \
+        if (g_logPath[0] || BuildPathFromLocalAppData(L"Temp\\f3d_thumb.log", g_logPath, MAX_PATH)) { \
+            HANDLE hLog = CreateFileW(g_logPath, \
+                FILE_APPEND_DATA, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL); \
+            if (hLog != INVALID_HANDLE_VALUE) { \
+                DWORD written; WriteFile(hLog, msg, strlen(msg), &written, NULL); \
+                WriteFile(hLog, "\r\n", 2, &written, NULL); CloseHandle(hLog); \
+            } \
         } \
     } while(0)
     

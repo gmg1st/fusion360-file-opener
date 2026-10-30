@@ -19,7 +19,7 @@ for /f "delims=" %%D in ('dir /b /ad /o-n "%BASE_DIR%" 2^>nul') do (
 
 :: If not found on D drive, try symlink path (C drive)
 if not defined LATEST_LAUNCHER (
-    set "BASE_DIR=C:\Users\G11\AppData\Local\Autodesk\webdeploy\production"
+    set "BASE_DIR=%LocalAppData%\Autodesk\webdeploy\production"
     for /f "delims=" %%D in ('dir /b /ad /o-n "%BASE_DIR%" 2^>nul') do (
         if exist "%BASE_DIR%\%%D\FusionLauncher.exe" (
             if not defined LATEST_LAUNCHER (

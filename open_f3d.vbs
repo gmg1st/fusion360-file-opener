@@ -83,8 +83,10 @@ If Not fusionRunning Then
     ' Try D drive (mklink real path) first
     productionDir = "D:\Fusion360\Installation\Local\Autodesk\webdeploy\production"
     If Not fso.FolderExists(productionDir) Then
-        ' Fall back to C drive (symlink path)
-        productionDir = "C:\Users\G11\AppData\Local\Autodesk\webdeploy\production"
+        ' Fall back to C drive (resolve %LocalAppData% at runtime)
+        Dim envShell
+        Set envShell = CreateObject("WScript.Shell")
+        productionDir = envShell.ExpandEnvironmentStrings("%LocalAppData%") & "\Autodesk\webdeploy\production"
     End If
 
     WriteLog "Looking for FusionLauncher.exe in: " & productionDir
@@ -110,7 +112,7 @@ If Not fusionRunning Then
         If launcherPath = "" Then
             Dim shellObj, sc, shortcutPath
             Set shellObj = CreateObject("WScript.Shell")
-            shortcutPath = "C:\Users\G11\Desktop\Autodesk Fusion.lnk"
+            shortcutPath = shellObj.ExpandEnvironmentStrings("%USERPROFILE%") & "\Desktop\Autodesk Fusion.lnk"
             If fso.FileExists(shortcutPath) Then
                 Set sc = shellObj.CreateShortcut(shortcutPath)
                 If fso.FileExists(sc.TargetPath) Then

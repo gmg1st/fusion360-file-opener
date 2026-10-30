@@ -10,11 +10,13 @@ import traceback
 import threading
 import ctypes
 
-# Hardcoded paths
-_logFile = r'C:\Users\G11\AppData\Local\Temp\fusion360_f3d_opener.log'
-_logFile2 = r'C:\Users\G11\AppData\Roaming\Autodesk\Autodesk Fusion 360\API\AddIns\F3DFileOpener\addin_debug.log'
-_readyFile = r'C:\Users\G11\AppData\Local\Temp\fusion360_f3d_opener_ready.txt'
-_requestFile = r'C:\Users\G11\AppData\Local\Temp\fusion360_f3d_opener_request.txt'
+# Paths resolved from environment (works for any user)
+_localAppData = os.environ.get('LOCALAPPDATA', os.path.join(os.path.expanduser('~'), 'AppData', 'Local'))
+_roamingAppData = os.environ.get('APPDATA', os.path.join(os.path.expanduser('~'), 'AppData', 'Roaming'))
+_logFile = os.path.join(_localAppData, 'Temp', 'fusion360_f3d_opener.log')
+_logFile2 = os.path.join(_roamingAppData, 'Autodesk', 'Autodesk Fusion 360', 'API', 'AddIns', 'F3DFileOpener', 'addin_debug.log')
+_readyFile = os.path.join(_localAppData, 'Temp', 'fusion360_f3d_opener_ready.txt')
+_requestFile = os.path.join(_localAppData, 'Temp', 'fusion360_f3d_opener_request.txt')
 _customEventId = 'F3DFileOpenerImportEvent'
 
 # Module-level log
