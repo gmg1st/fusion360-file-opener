@@ -1,0 +1,12 @@
+{
+	"autodeskProduct":	"Fusion",
+	"type":	"addin",
+	"author":	"Custom",
+	"description":	{
+		"":	"Opens F3D files from Windows file association by monitoring a request file."
+	},
+	"runOnStartup":	true,
+	"version": "1.0.0",
+	"supportedOS":	"windows",
+	"editEnabled":	true
+}

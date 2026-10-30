@@ -1,0 +1,4 @@
+LIBRARY F3DThumbnailProviderNative
+EXPORTS
+    DllGetClassObject
+    DllCanUnloadNow

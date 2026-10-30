@@ -1,0 +1,33 @@
+Windows Registry Editor Version 5.00
+
+; Register F3DThumbnailProvider COM component in HKLM (64-bit)
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{7A3B9C2E-4D5F-4A1E-9B8C-3F2E1D5A6B7C}]
+@="F3DThumbnailProvider"
+"DisableProcessIsolation"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{7A3B9C2E-4D5F-4A1E-9B8C-3F2E1D5A6B7C}\InprocServer32]
+@="C:\\Windows\\System32\\mscoree.dll"
+"ThreadingModel"="Both"
+"Class"="F3DThumbnailProvider.F3DThumbnailProviderClass"
+"Assembly"="F3DThumbnailProvider, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+"RuntimeVersion"="v4.0.30319"
+"CodeBase"="file:///d:/fusion360/F3DThumbnailProvider.dll"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{7A3B9C2E-4D5F-4A1E-9B8C-3F2E1D5A6B7C}\ProgId]
+@="F3DThumbnailProvider.F3DThumbnailProviderClass"
+
+; Register in WOW6432Node (32-bit)
+[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Classes\CLSID\{7A3B9C2E-4D5F-4A1E-9B8C-3F2E1D5A6B7C}]
+@="F3DThumbnailProvider"
+"DisableProcessIsolation"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Classes\CLSID\{7A3B9C2E-4D5F-4A1E-9B8C-3F2E1D5A6B7C}\InprocServer32]
+@="C:\\Windows\\SysWOW64\\mscoree.dll"
+"ThreadingModel"="Both"
+"Class"="F3DThumbnailProvider.F3DThumbnailProviderClass"
+"Assembly"="F3DThumbnailProvider, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+"RuntimeVersion"="v4.0.30319"
+"CodeBase"="file:///d:/fusion360/F3DThumbnailProvider.dll"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Classes\CLSID\{7A3B9C2E-4D5F-4A1E-9B8C-3F2E1D5A6B7C}\ProgId]
+@="F3DThumbnailProvider.F3DThumbnailProviderClass"

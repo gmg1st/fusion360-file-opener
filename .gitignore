@@ -1,0 +1,19 @@
+# Fusion 360 安装目录（6GB+，Autodesk 版权文件，禁止上传）
+Installation/
+
+# IDE 配置
+.trae/
+
+# 编译产物与第三方二进制文件
+*.exe
+*.dll
+*.zip
+*.bak
+
+# 日志与系统临时文件
+*.log
+Thumbs.db
+Desktop.ini
+
+# 上传附件缓存
+.uploads/
